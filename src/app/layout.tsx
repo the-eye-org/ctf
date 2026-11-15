@@ -1,25 +1,32 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { Archivo, Big_Shoulders, JetBrains_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import { cn } from '@/lib/utils';
 import { SiteBackground } from '@/components/shared/site-background';
 import { SwingOverlay } from '@/components/swing/swing-overlay';
 
-const display = Big_Shoulders({
-  subsets: ['latin'],
-  weight: ['700', '900'],
+const display = localFont({
+  src: [
+    { path: '../../public/fonts/big-shoulders-700.ttf', weight: '700' },
+    { path: '../../public/fonts/big-shoulders-900.ttf', weight: '900' },
+  ],
   variable: '--font-display',
-  // Next has no fallback metrics for this family.
-  adjustFontFallback: false,
 });
-const sans = Archivo({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
+
+const sans = localFont({
+  src: [
+    { path: '../../public/fonts/archivo-400.ttf', weight: '400' },
+    { path: '../../public/fonts/archivo-500.ttf', weight: '500' },
+    { path: '../../public/fonts/archivo-600.ttf', weight: '600' },
+  ],
   variable: '--font-sans',
 });
-const mono = JetBrains_Mono({
-  subsets: ['latin'],
-  weight: ['400', '600'],
+
+const mono = localFont({
+  src: [
+    { path: '../../public/fonts/jetbrains-mono-400.ttf', weight: '400' },
+    { path: '../../public/fonts/jetbrains-mono-600.ttf', weight: '600' },
+  ],
   variable: '--font-mono',
 });
 
