@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { normalizeLocation, placeMatches } from '@/lib/coordinates/normalize';
-
+ 
 describe('normalizeLocation', () => {
   it.each([
     ['  Coimbatore. ', 'coimbatore'],
