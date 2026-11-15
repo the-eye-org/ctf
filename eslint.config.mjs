@@ -19,6 +19,8 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      // Third-party Emscripten runtime distributed with sql.js.
+      "public/sql-wasm.js",
     ],
   },
 ];
