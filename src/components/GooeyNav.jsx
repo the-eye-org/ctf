@@ -1,6 +1,6 @@
 'use client';
 
-import { appPath } from '@/lib/app-path';
+import Link from 'next/link';
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
@@ -773,9 +773,9 @@ const GooeyNav = ({
           data-active={index === current ? '' : undefined}
         >
           {item.href ? (
-            <a href={appPath(item.href)} {...shared}>
+            <Link href={item.href} {...shared}>
               {content}
-            </a>
+            </Link>
           ) : (
             <button type="button" {...shared}>
               {content}
