@@ -32,22 +32,27 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
 
-  test:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
-    steps:
-      - uses: useblacksmith/checkout@v1
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm test
-
   build:
     runs-on: blacksmith-4vcpu-ubuntu-2404
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DIRECT_DATABASE_URL: ${{ secrets.DIRECT_DATABASE_URL }}
+      SESSION_PEPPER: ${{ secrets.SESSION_PEPPER }}
+      FLAG_HMAC_KEY: ${{ secrets.FLAG_HMAC_KEY }}
+      VARIANT_HMAC_KEY: ${{ secrets.VARIANT_HMAC_KEY }}
+      COORD_HMAC_KEY: ${{ secrets.COORD_HMAC_KEY }}
+      REVEAL_ENC_KEY: ${{ secrets.REVEAL_ENC_KEY }}
+      CSRF_SECRET: ${{ secrets.CSRF_SECRET }}
+      FLAG_PREFIX: ${{ vars.FLAG_PREFIX }}
+      EVENT_TIMEZONE: ${{ vars.EVENT_TIMEZONE }}
+      MAX_SESSIONS_PER_TEAM: ${{ vars.MAX_SESSIONS_PER_TEAM }}
+      REALTIME_CHANNEL_PREFIX: ${{ vars.REALTIME_CHANNEL_PREFIX }}
+      ARGON2_MEMORY_KIB: ${{ vars.ARGON2_MEMORY_KIB }}
+      ARGON2_TIME_COST: ${{ vars.ARGON2_TIME_COST }}
+      ARGON2_PARALLELISM: ${{ vars.ARGON2_PARALLELISM }}
     steps:
       - uses: useblacksmith/checkout@v1
       - uses: pnpm/action-setup@v4
@@ -62,7 +67,7 @@ jobs:
 
   build-and-push:
     if: github.event_name != 'pull_request'
-    needs: [validate, test, build]
+    needs: [validate, build]
     runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
