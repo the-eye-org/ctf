@@ -64,6 +64,16 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - name: Archive application build
+        run: |
+          cp -r public .next/standalone/public
+          cp -r .next/static .next/standalone/.next/static
+          tar -czf app-build.tar.gz -C .next/standalone .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-build
+          path: app-build.tar.gz
+          retention-days: 1
 
   build-and-push:
     if: github.event_name != 'pull_request'
@@ -74,6 +84,11 @@ jobs:
       packages: write
     steps:
       - uses: useblacksmith/checkout@v1
+      - uses: actions/download-artifact@v4
+        with:
+          name: app-build
+      - name: Extract application build
+        run: mkdir -p app-build && tar -xzf app-build.tar.gz -C app-build
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -90,25 +105,6 @@ jobs:
           push: true
           provenance: false
           tags: ${{ env.IMAGE_NAME }}:${{ github.sha }}
-          secrets: |
-            "build_env=NEXT_PUBLIC_SUPABASE_URL=${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
-            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-            SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-            DATABASE_URL=${{ secrets.DATABASE_URL }}
-            DIRECT_DATABASE_URL=${{ secrets.DIRECT_DATABASE_URL }}
-            SESSION_PEPPER=${{ secrets.SESSION_PEPPER }}
-            FLAG_HMAC_KEY=${{ secrets.FLAG_HMAC_KEY }}
-            VARIANT_HMAC_KEY=${{ secrets.VARIANT_HMAC_KEY }}
-            COORD_HMAC_KEY=${{ secrets.COORD_HMAC_KEY }}
-            REVEAL_ENC_KEY=${{ secrets.REVEAL_ENC_KEY }}
-            CSRF_SECRET=${{ secrets.CSRF_SECRET }}
-            FLAG_PREFIX=${{ vars.FLAG_PREFIX }}
-            EVENT_TIMEZONE=${{ vars.EVENT_TIMEZONE }}
-            MAX_SESSIONS_PER_TEAM=${{ vars.MAX_SESSIONS_PER_TEAM }}
-            REALTIME_CHANNEL_PREFIX=${{ vars.REALTIME_CHANNEL_PREFIX }}
-            ARGON2_MEMORY_KIB=${{ vars.ARGON2_MEMORY_KIB }}
-            ARGON2_TIME_COST=${{ vars.ARGON2_TIME_COST }}
-            ARGON2_PARALLELISM=${{ vars.ARGON2_PARALLELISM }}"
       - name: Notify Jenkins with immutable image
         env:
           JENKINS_WEBHOOK_URL: ${{ secrets.JENKINS_WEBHOOK_URL }}
