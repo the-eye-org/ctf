@@ -15,21 +15,21 @@ export type Pose = {
 };
 
 const SWING: Pose = {
-  src: '/spidey/poses/swing-classic.webp',
+  src: '/ctf/spidey/poses/swing-classic.webp',
   w: 521,
   h: 479,
   hand: [5.5 / 521, 0],
   tilt: -41,
 };
 const HANG: Pose = {
-  src: '/spidey/poses/hang-grip-web.webp',
+  src: '/ctf/spidey/poses/hang-grip-web.webp',
   w: 365,
   h: 684,
   hand: [125 / 365, 186 / 684],
   tilt: -14,
 };
 const LAND: Pose = {
-  src: '/spidey/poses/land-crouch.webp',
+  src: '/ctf/spidey/poses/land-crouch.webp',
   w: 588,
   h: 393,
   hand: [0.5, 0.55],
@@ -43,7 +43,7 @@ export const POSES: Record<PoseName, Pose> = {
   hang: HANG,
   // Image 3: forward, shooting a web. Right-to-left swing.
   webShoot: {
-    src: '/spidey/poses/web-shoot-air.webp',
+    src: '/ctf/spidey/poses/web-shoot-air.webp',
     w: 507,
     h: 394,
     hand: [60 / 507, 24 / 394],
@@ -57,12 +57,12 @@ export const POSES: Record<PoseName, Pose> = {
   // Image 6: hanging upside down by his feet. Login only, never in any other sequence (a unit test
   // holds this). Cut from the organiser's PNG on light grey; the web leaves at his feet, straight up.
   login: {
-    src: '/spidey/poses/hang-upside-down.webp',
+    src: '/ctf/spidey/poses/hang-upside-down.webp',
     w: 300,
     h: 400,
     hand: [142.5 / 300, 2 / 400],
     tilt: 0,
   },
   // The original left-to-right swing cutout (already transparent).
-  classic: { src: '/swing/spiderman.webp', w: 391, h: 367, hand: [0.829, 0.016], tilt: 26.6 },
+  classic: { src: '/ctf/swing/spiderman.webp', w: 391, h: 367, hand: [0.829, 0.016], tilt: 26.6 },
 };

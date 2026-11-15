@@ -28,7 +28,7 @@ export function SurpriseDialog({
   useEffect(() => {
     if (!dialog.current?.open) dialog.current?.showModal();
     let live = true;
-    apiPost(`/api/surprises/${kind}/discover`, {})
+    apiPost(`/ctf/api/surprises/${kind}/discover`, {})
       .then(async (res) => {
         if (!live || res.status === 401) return;
         const body = res.ok ? await res.json() : null;
@@ -93,7 +93,7 @@ export function SurpriseDialog({
             {/* Sanitised on the server. */}
             <div dangerouslySetInnerHTML={{ __html: found.html }} />
             <AnswerForm
-              path={`/api/surprises/${kind}/submit`}
+              path={`/ctf/api/surprises/${kind}/submit`}
               label="Your answer"
               submitLabel="Send"
               onCorrect={() => {

@@ -4,7 +4,7 @@ import Image from 'next/image';
 export function SpiderLogo({ className = 'size-11' }: { className?: string }) {
   return (
     <Image
-      src="/event-logo.png"
+      src="/ctf/event-logo.png"
       alt=""
       width={335}
       height={335}

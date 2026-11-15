@@ -12,7 +12,7 @@ export function Hints({ number, count }: { number: number; count: number }) {
 
   async function reveal(index: number) {
     setFailed(false);
-    const res = await apiPost(`/api/challenges/${number}/hints`, { index }).catch(() => null);
+    const res = await apiPost(`/ctf/api/challenges/${number}/hints`, { index }).catch(() => null);
     if (!res?.ok) return setFailed(true);
     const { hint } = await res.json();
     setRevealed((current) => ({ ...current, [index]: hint }));

@@ -11,7 +11,7 @@ async function announceIfEnded(res: Response): Promise<void> {
 }
 
 export async function fetchSession(): Promise<Response> {
-  const res = await fetch('/api/auth/session');
+  const res = await fetch('/ctf/api/auth/session');
   await announceIfEnded(res);
   if (res.ok) csrf = (await res.clone().json()).csrf;
   return res;

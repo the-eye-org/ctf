@@ -74,7 +74,7 @@ export function SolvesPanel({ questions, timeZone }: { questions: SolveOrder; ti
           label="Reset solves"
           onClose={() => setTarget(undefined)}
           onConfirm={async () => {
-            const result = await run('POST', `/api/admin/challenges/${target.id}/reset-solves`, {
+            const result = await run('POST', `/ctf/api/admin/challenges/${target.id}/reset-solves`, {
               confirm: 'RESET',
             });
             if (result.ok) setTarget(undefined);

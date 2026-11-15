@@ -47,7 +47,7 @@ export function WorkspacesPanel({
         setStatus(`Uploading ${i + 1} of ${files.length}: ${file.name}`);
         const signed = await send<{ uploadUrl: string; contentType: string }>(
           'POST',
-          '/api/admin/workspaces',
+          '/ctf/api/admin/workspaces',
           { workspace, file: file.name },
         );
         if (!signed.ok) throw new Error(`${file.name}: ${signed.message}`);
@@ -136,7 +136,7 @@ export function WorkspacesPanel({
                         type="button"
                         className={actionClass}
                         onClick={() =>
-                          run('DELETE', '/api/admin/workspaces', {
+                          run('DELETE', '/ctf/api/admin/workspaces', {
                             workspace: w.name,
                             file: file.key,
                           })

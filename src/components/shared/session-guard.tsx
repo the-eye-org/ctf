@@ -1,5 +1,7 @@
 'use client';
 
+import { appPath } from '@/lib/app-path';
+
 import { useEffect, useRef, useState } from 'react';
 
 import { usePoll } from '@/components/participant/use-poll';
@@ -21,7 +23,7 @@ export function SessionGuard({ loginPath }: { loginPath: string }) {
     const onEnded = (event: Event) => {
       const detail = (event as CustomEvent).detail;
       if (!isSessionEndReason(detail)) return;
-      const next = window.location.pathname + window.location.search;
+      const next = window.location.pathname.replace(/^\/ctf(?=\/|$)/, '') + window.location.search;
       setLoginHref(`${loginPath}?next=${encodeURIComponent(next)}`);
       setReason(detail);
     };
@@ -43,7 +45,7 @@ export function SessionGuard({ loginPath }: { loginPath: string }) {
       ref={dialog}
       // Esc closes overlays (Design Brief §7), but this session is gone, so never reveal the stale
       // page behind. Chrome ignores preventDefault on cancel without a prior user gesture.
-      onClose={() => window.location.assign(loginHref)}
+      onClose={() => window.location.assign(appPath(loginHref))}
       aria-labelledby="session-ended-title"
       className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-md border border-border bg-card p-6 text-foreground backdrop:bg-black/80"
     >
@@ -54,7 +56,7 @@ export function SessionGuard({ loginPath }: { loginPath: string }) {
         Session ended
       </h2>
       <p className="mt-2 text-sm text-muted-foreground">{SESSION_ENDED_MESSAGES[reason]}</p>
-      <a href={loginHref} className={buttonVariants({ className: 'mt-6 h-11 w-full text-base' })}>
+      <a href={appPath(loginHref)} className={buttonVariants({ className: 'mt-6 h-11 w-full text-base' })}>
         Log in again
       </a>
     </dialog>

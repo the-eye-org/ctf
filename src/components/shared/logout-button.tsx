@@ -1,5 +1,7 @@
 'use client';
 
+import { appPath } from '@/lib/app-path';
+
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -11,9 +13,9 @@ export function LogoutButton({ loginPath }: { loginPath: string }) {
   async function logout() {
     setFailed(false);
     try {
-      const res = await apiPost('/api/auth/logout');
+      const res = await apiPost('/ctf/api/auth/logout');
       if (res.ok) {
-        window.location.assign(loginPath);
+        window.location.assign(appPath(loginPath));
         return;
       }
     } catch {

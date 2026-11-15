@@ -203,11 +203,11 @@ type InitSqlJs = (config: { locateFile: () => string }) => Promise<SqlJs>;
 // sql.js from public/ as a plain script: webpack can't bundle it, and most pages never need it.
 function loadSqlJs(): Promise<SqlJs> {
   const page = window as unknown as { initSqlJs?: InitSqlJs };
-  const start = () => page.initSqlJs!({ locateFile: () => '/sql-wasm.wasm' });
+  const start = () => page.initSqlJs!({ locateFile: () => '/ctf/sql-wasm.wasm' });
   if (page.initSqlJs) return start();
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = '/sql-wasm.js';
+    script.src = '/ctf/sql-wasm.js';
     script.onload = () => start().then(resolve, reject);
     script.onerror = () => reject(new Error('script'));
     document.head.append(script);

@@ -36,7 +36,7 @@ export function SiteBackground() {
     return (
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 bg-[#1b2a55]">
         <img
-          src="/swing/board-bg.webp"
+          src="/ctf/swing/board-bg.webp"
           alt=""
           className="h-full w-full object-cover object-[50%_45%]"
         />

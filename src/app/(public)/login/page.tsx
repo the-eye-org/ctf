@@ -20,7 +20,7 @@ export default async function LoginPage({
   return (
     <AuthCard title="Team login" subtitle="Log in with your team name and password.">
       <LoginForm
-        endpoint="/api/auth/login"
+        endpoint="/ctf/api/auth/login"
         next={target}
         usernameLabel="Team name"
         notice={isSessionEndReason(reason) ? SESSION_ENDED_MESSAGES[reason] : undefined}

@@ -30,7 +30,7 @@ export function SurpriseLayer() {
   const [open, setOpen] = useState<string | null>(null);
 
   usePoll(() => {
-    fetch('/api/surprises')
+    fetch('/ctf/api/surprises')
       .then((res) => (res.ok ? res.json() : null))
       .then((body) => {
         if (!body) return;

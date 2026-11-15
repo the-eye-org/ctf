@@ -12,7 +12,7 @@ export function Announcements({ initial }: { initial: Item[] }) {
   const [items, setItems] = useState(initial);
 
   usePoll(() => {
-    fetch('/api/announcements')
+    fetch('/ctf/api/announcements')
       .then((res) => (res.ok ? res.json() : null))
       .then((body) => body && setItems(body.announcements))
       .catch(() => {});

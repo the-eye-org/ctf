@@ -43,7 +43,7 @@ function LocationAnswer({ position, points }: { position: number; points: number
     setPending(true);
     setMessage('');
     try {
-      const res = await apiPost('/api/coordinates/locations', { position, answer });
+      const res = await apiPost('/ctf/api/coordinates/locations', { position, answer });
       if (!res.ok) {
         if (res.status !== 401) setMessage('Signal interference, try again.');
         return;
@@ -112,7 +112,7 @@ function SpaceSignal({ signal }: { signal: NonNullable<BoardData['signal']> }) {
     setPending(true);
     setMessage('');
     try {
-      const res = await apiPost('/api/coordinates/submit', { answer });
+      const res = await apiPost('/ctf/api/coordinates/submit', { answer });
       if (!res.ok) {
         if (res.status !== 401) setMessage('Signal interference, try again.');
         return;
@@ -152,7 +152,7 @@ function SpaceSignal({ signal }: { signal: NonNullable<BoardData['signal']> }) {
         celestial catalogue and name the object.
       </p>
       <a
-        href="/api/coordinates/catalog"
+        href="/ctf/api/coordinates/catalog"
         download
         className="inline-flex min-h-11 w-fit items-center rounded-md border border-border px-4 font-semibold hover:bg-secondary"
       >

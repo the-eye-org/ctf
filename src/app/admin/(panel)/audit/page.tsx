@@ -81,7 +81,7 @@ export default async function AuditPage({
         )}
       </div>
       <a
-        href="/api/admin/audit?format=csv"
+        href="/ctf/api/admin/audit?format=csv"
         className="inline-flex h-11 items-center rounded-md border border-border px-3 text-sm font-medium hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring sm:h-8"
       >
         Download CSV

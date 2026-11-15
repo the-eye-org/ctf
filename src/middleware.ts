@@ -10,7 +10,7 @@ export function middleware(req: NextRequest) {
   if (pathname === '/admin/login' || req.cookies.has(SESSION_COOKIE)) return NextResponse.next();
 
   const isAdminArea = pathname === '/screen' || pathname.startsWith('/admin');
-  const url = new URL(isAdminArea ? '/admin/login' : '/login', req.url);
+  const url = new URL(isAdminArea ? '/ctf/admin/login' : '/ctf/login', req.url);
   if (!isAdminArea) url.searchParams.set('next', pathname + search);
   return NextResponse.redirect(url);
 }

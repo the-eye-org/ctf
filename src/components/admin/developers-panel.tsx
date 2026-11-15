@@ -18,7 +18,7 @@ export function DevelopersPanel({ developers }: { developers: Developer[] }) {
     event.preventDefault();
     const form = event.currentTarget;
     const f = new FormData(form);
-    const result = await run('POST', '/api/admin/developers', {
+    const result = await run('POST', '/ctf/api/admin/developers', {
       username: String(f.get('username')),
       password: String(f.get('password')),
     });
@@ -74,7 +74,7 @@ export function DevelopersPanel({ developers }: { developers: Developer[] }) {
           label="Remove"
           onClose={() => setRemoving(undefined)}
           onConfirm={async () => {
-            const result = await run('DELETE', `/api/admin/developers/${removing.id}`);
+            const result = await run('DELETE', `/ctf/api/admin/developers/${removing.id}`);
             if (result.ok) setRemoving(undefined);
             else return result.message;
           }}

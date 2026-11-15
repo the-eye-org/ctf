@@ -20,5 +20,5 @@ export function isSessionEndReason(value: unknown): value is SessionEndReason {
 // Only same-site paths. Browsers treat `\` as `/` and strip control characters, so `/\evil.com`
 // and `/<tab>/evil.com` would otherwise leave the site.
 export function safeNext(next: unknown, fallback: string): string {
-  return typeof next === 'string' && /^\/(?!\/)[^\\\x00-\x1f]*$/.test(next) ? next : fallback;
+  return typeof next === 'string' && /^\/(?!\/)[^\\\x00-\x1f]*$/.test(next) ? next.replace(/^\/ctf(?=\/|$)/, '') || '/' : fallback;
 }

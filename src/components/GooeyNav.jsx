@@ -1,5 +1,7 @@
 'use client';
 
+import { appPath } from '@/lib/app-path';
+
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import './GooeyNav.css';
@@ -771,7 +773,7 @@ const GooeyNav = ({
           data-active={index === current ? '' : undefined}
         >
           {item.href ? (
-            <a href={item.href} {...shared}>
+            <a href={appPath(item.href)} {...shared}>
               {content}
             </a>
           ) : (

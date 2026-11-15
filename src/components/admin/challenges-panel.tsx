@@ -110,7 +110,7 @@ export function ChallengesPanel({
                     checked={row.isPublished}
                     className="size-5"
                     onChange={() =>
-                      run('PATCH', `/api/admin/challenges/${row.id}`, {
+                      run('PATCH', `/ctf/api/admin/challenges/${row.id}`, {
                         isPublished: !row.isPublished,
                       })
                     }
@@ -158,7 +158,7 @@ export function ChallengesPanel({
           label="Delete"
           onClose={close}
           onConfirm={async () => {
-            const result = await run('DELETE', `/api/admin/challenges/${dialog.row.id}`);
+            const result = await run('DELETE', `/ctf/api/admin/challenges/${dialog.row.id}`);
             if (result.ok) close();
             else return result.message;
           }}
@@ -200,7 +200,7 @@ function ChallengeForm({
 
   useEffect(() => {
     if (!row) return;
-    fetch(`/api/admin/challenges/${row.id}`)
+    fetch(`/ctf/api/admin/challenges/${row.id}`)
       .then(async (res) => {
         if (!res.ok) throw new Error();
         setLoaded((await res.json()).challenge);
@@ -241,8 +241,8 @@ function ChallengeForm({
       isPublished: f.get('isPublished') === 'on',
     };
     const result = row
-      ? await run('PATCH', `/api/admin/challenges/${row.id}`, fields)
-      : await run<{ id: string }>('POST', '/api/admin/challenges', {
+      ? await run('PATCH', `/ctf/api/admin/challenges/${row.id}`, fields)
+      : await run<{ id: string }>('POST', '/ctf/api/admin/challenges', {
           fields,
           flagTemplate: text('flagTemplate'),
         });
@@ -250,7 +250,7 @@ function ChallengeForm({
     // A new static challenge is created per-team first, then switched, so the flag is hashed server-side.
     if (!row && flagMode === 'static') {
       const created = result as { ok: true; data: { id: string } };
-      const flagResult = await run('POST', `/api/admin/challenges/${created.data.id}/flag`, {
+      const flagResult = await run('POST', `/ctf/api/admin/challenges/${created.data.id}/flag`, {
         mode: 'static',
         flag: text('staticFlag'),
       });
@@ -509,7 +509,7 @@ function FlagSection({ row }: { row: Row }) {
         onClick={async () => {
           const result = await run(
             'POST',
-            `/api/admin/challenges/${row.id}/flag`,
+            `/ctf/api/admin/challenges/${row.id}/flag`,
             mode === 'team' ? { mode, template: value } : { mode, flag: value },
           );
           setSaved(result.ok);
@@ -546,7 +546,7 @@ function ToolsModal({
     event.preventDefault();
     const result = await run<{ match: boolean; malformed: boolean; stale: boolean }>(
       'POST',
-      `/api/admin/challenges/${row.id}/test-flag`,
+      `/ctf/api/admin/challenges/${row.id}/test-flag`,
       { teamId, flag },
     );
     if (result.ok) {
@@ -558,7 +558,7 @@ function ToolsModal({
   }
 
   async function preview() {
-    const res = await fetch(`/api/admin/challenges/${row.id}/preview?team=${teamId}`);
+    const res = await fetch(`/ctf/api/admin/challenges/${row.id}/preview?team=${teamId}`);
     const data = await res.json().catch(() => ({}));
     setOutput(res.ok ? JSON.stringify(data, null, 2) : (data.error?.message ?? 'Preview failed.'));
   }
@@ -612,7 +612,7 @@ function ToolsModal({
             onClick={async () => {
               const result = await run<{ regenerated: number }>(
                 'POST',
-                `/api/admin/challenges/${row.id}/regenerate`,
+                `/ctf/api/admin/challenges/${row.id}/regenerate`,
               );
               if (result.ok) setOutput(`Regenerated ${result.data.regenerated} variants.`);
             }}

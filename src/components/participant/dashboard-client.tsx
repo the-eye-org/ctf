@@ -81,7 +81,7 @@ export function DashboardClient({
             className="hidden size-56 shrink-0 overflow-hidden rounded-full md:block"
           >
             <HalftoneReveal
-              src="/event-logo.png"
+              src="/ctf/event-logo.png"
               inkColor="#e2232a"
               paperColor="#07090f"
               invert

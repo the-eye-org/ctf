@@ -22,7 +22,7 @@ export function OverviewLive({ initial }: { initial: Overview }) {
   useEffect(() => {
     const timer = setInterval(async () => {
       try {
-        const res = await fetch('/api/admin/overview', { cache: 'no-store' });
+        const res = await fetch('/ctf/api/admin/overview', { cache: 'no-store' });
         if (!res.ok) throw new Error();
         setData(await res.json());
         setStale(false);

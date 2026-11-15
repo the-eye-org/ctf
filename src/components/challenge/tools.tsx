@@ -13,7 +13,7 @@ const BUTTON =
   'min-h-11 rounded-sm border border-border px-3 text-sm hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:opacity-50';
 
 const fileUrl = (number: number, key: string) =>
-  `/api/challenges/${number}/workspace/files/${encodeURIComponent(key)}`;
+  `/ctf/api/challenges/${number}/workspace/files/${encodeURIComponent(key)}`;
 
 // Q4: pick a tile, then pick another to swap them. Turning a tile changes only this page's view.
 function TileBoard({ number, files }: { number: number; files: WorkspaceState['files'] }) {
@@ -84,7 +84,7 @@ function Messages({ number }: { number: number }) {
     setBusy(true);
     setError('');
     try {
-      const res = await apiPost(`/api/challenges/${number}/message`, { to, text });
+      const res = await apiPost(`/ctf/api/challenges/${number}/message`, { to, text });
       if (!res.ok) {
         setError('The message did not send. Try again.');
         return;

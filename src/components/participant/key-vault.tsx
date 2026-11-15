@@ -93,7 +93,7 @@ export function KeyVault({ vault }: { vault: Vault }) {
         </p>
       ) : (
         <AnswerForm
-          path="/api/coordinates/submit"
+          path="/ctf/api/coordinates/submit"
           label="Final flag"
           submitLabel="Submit"
           onCorrect={() => router.refresh()}

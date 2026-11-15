@@ -51,3 +51,7 @@ QUESTIONS_TEMPLATE.md format for the organisers' questions
 
 ## Docs
 [PRD](docs/01-PRD.md) · [TRD](docs/02-TRD.md) · [App flow](docs/03-App-Flow.md) · [Design brief](docs/04-Design-Brief.md) · [Backend schema](docs/05-Backend-Schema.md) · [Implementation plan](docs/06-Implementation-Plan.md)
+
+## Deployment under /ctf
+
+The app is built with Next.js basePath /ctf. Rebuild the image after changing this prefix. Use deploy/nginx.conf as the proxy configuration; preserve the /ctf prefix upstream. Validate with nginx -t before reloading Nginx. If TLS terminates at an earlier proxy, configure X-Forwarded-Proto to reflect that trusted HTTPS connection.

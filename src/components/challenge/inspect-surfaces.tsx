@@ -32,7 +32,7 @@ export function InspectSurfaces({ surfaces }: { surfaces: Surfaces }) {
             dangerouslySetInnerHTML={{ __html: jsonForScript({ cookies, localStorage }) }}
           />
           {/* Not async: React would hoist it above the block it reads. */}
-          <script src="/challenges/clue.js" defer />
+          <script src="/ctf/challenges/clue.js" defer />
         </>
       )}
     </>

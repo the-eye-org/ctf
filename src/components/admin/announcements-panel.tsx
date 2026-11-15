@@ -17,7 +17,7 @@ export function AnnouncementsPanel({ rows, timeZone }: { rows: Row[]; timeZone: 
 
   async function create(event: FormEvent) {
     event.preventDefault();
-    const result = await run('POST', '/api/admin/announcements', { message });
+    const result = await run('POST', '/ctf/api/admin/announcements', { message });
     if (result.ok) setMessage('');
   }
 
@@ -53,7 +53,7 @@ export function AnnouncementsPanel({ rows, timeZone }: { rows: Row[]; timeZone: 
               variant="destructive"
               className={actionClass}
               disabled={pending}
-              onClick={() => run('DELETE', `/api/admin/announcements/${row.id}`)}
+              onClick={() => run('DELETE', `/ctf/api/admin/announcements/${row.id}`)}
             >
               Remove
             </Button>

@@ -58,7 +58,7 @@ export function TeamsPanel({
   const close = () => setDialog(undefined);
 
   async function patch(team: TeamRow, changes: Record<string, unknown>) {
-    const result = await send('PATCH', `/api/admin/teams/${team.id}`, changes);
+    const result = await send('PATCH', `/ctf/api/admin/teams/${team.id}`, changes);
     if (!result.ok) return result.message;
     router.refresh();
   }
@@ -232,7 +232,7 @@ export function TeamsPanel({
           label="Revoke sessions"
           onClose={close}
           onConfirm={async () => {
-            const result = await send('POST', `/api/admin/teams/${dialog.team.id}/revoke-sessions`);
+            const result = await send('POST', `/ctf/api/admin/teams/${dialog.team.id}/revoke-sessions`);
             if (!result.ok) return result.message;
             close();
             router.refresh();
@@ -264,7 +264,7 @@ export function TeamsPanel({
           label="Delete permanently"
           onClose={close}
           onConfirm={async () => {
-            const result = await send('DELETE', `/api/admin/teams/${dialog.team.id}`);
+            const result = await send('DELETE', `/ctf/api/admin/teams/${dialog.team.id}`);
             if (!result.ok) return result.message;
             close();
             router.refresh();
@@ -347,7 +347,7 @@ function CreateTeamsModal({
     setError(undefined);
     const result = await send<{ credentials: Credential[]; csv: string }>(
       'POST',
-      '/api/admin/teams',
+      '/ctf/api/admin/teams',
       { text },
     );
     setPending(false);
@@ -436,7 +436,7 @@ function ResetPasswordModal({
     setError(undefined);
     const result = await send<{ username: string; password: string }>(
       'POST',
-      `/api/admin/teams/${team.id}/reset-password`,
+      `/ctf/api/admin/teams/${team.id}/reset-password`,
       mode === 'custom' ? { password: password.trim() } : {},
     );
     setPending(false);
@@ -556,7 +556,7 @@ function SessionsModal({
   const [error, setError] = useState<string>();
 
   useEffect(() => {
-    fetch(`/api/admin/teams/${team.id}/sessions`)
+    fetch(`/ctf/api/admin/teams/${team.id}/sessions`)
       .then(async (res) => {
         if (!res.ok) throw new Error();
         setRows((await res.json()).sessions);

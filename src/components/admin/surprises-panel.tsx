@@ -56,9 +56,9 @@ function MorseSender({ enabled }: { enabled: boolean }) {
   async function send(event: FormEvent) {
     event.preventDefault();
     setSent(false);
-    const saved = await run('PATCH', '/api/admin/surprises/spidey_signal', { answer: word });
+    const saved = await run('PATCH', '/ctf/api/admin/surprises/spidey_signal', { answer: word });
     if (!saved.ok) return;
-    const activated = await run('POST', '/api/admin/surprises/spidey_signal/activate');
+    const activated = await run('POST', '/ctf/api/admin/surprises/spidey_signal/activate');
     if (!activated.ok) return;
     setSent(true);
     setWord('');
@@ -95,7 +95,7 @@ function MorseSender({ enabled }: { enabled: boolean }) {
             disabled={pending}
             onClick={() => {
               setSent(false);
-              return run('PATCH', '/api/admin/surprises/spidey_signal', { enabled: false });
+              return run('PATCH', '/ctf/api/admin/surprises/spidey_signal', { enabled: false });
             }}
           >
             Stop
@@ -139,7 +139,7 @@ function SurpriseCard({
     const form = event.currentTarget;
     const f = new FormData(form);
     const answer = String(f.get('answer') ?? '');
-    const result = await run('PATCH', `/api/admin/surprises/${s.kind}`, {
+    const result = await run('PATCH', `/ctf/api/admin/surprises/${s.kind}`, {
       title: String(f.get('title')),
       contentHtml: String(f.get('contentHtml')),
       assetUrl: String(f.get('assetUrl') ?? '').trim() || null,
@@ -232,7 +232,7 @@ function SurpriseCard({
             variant="outline"
             className={actionClass}
             disabled={pending || !s.hasAnswer}
-            onClick={() => run('POST', `/api/admin/surprises/${s.kind}/activate`)}
+            onClick={() => run('POST', `/ctf/api/admin/surprises/${s.kind}/activate`)}
           >
             Activate now
           </Button>
@@ -245,7 +245,7 @@ function SurpriseCard({
               onClick={async () => {
                 const result = await run<{ answer: string }>(
                   'POST',
-                  `/api/admin/surprises/${s.kind}/reveal`,
+                  `/ctf/api/admin/surprises/${s.kind}/reveal`,
                 );
                 if (result.ok) setRevealed(result.data.answer);
               }}

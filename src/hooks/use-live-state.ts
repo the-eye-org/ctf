@@ -12,9 +12,9 @@ const TRAILING_MS = 1_500;
 
 async function load(signal: AbortSignal): Promise<LiveState> {
   // One after the other, as everywhere: the CDN caches both.
-  const state = await fetch('/api/public/state', { signal });
+  const state = await fetch('/ctf/api/public/state', { signal });
   if (!state.ok) throw new Error('state');
-  const feed = await fetch('/api/public/feed', { signal });
+  const feed = await fetch('/ctf/api/public/feed', { signal });
   if (!feed.ok) throw new Error('feed');
   return {
     ...((await state.json()) as PublicState),

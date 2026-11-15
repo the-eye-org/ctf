@@ -17,7 +17,7 @@ import type { WorkspaceState } from '@/lib/workspace/state';
 type File = WorkspaceState['files'][number];
 
 const fileUrl = (number: number, key: string) =>
-  `/api/challenges/${number}/workspace/files/${encodeURIComponent(key)}`;
+  `/ctf/api/challenges/${number}/workspace/files/${encodeURIComponent(key)}`;
 
 function TextPreview({ file, url }: { file: File; url: string }) {
   const [text, setText] = useState<string | null>(null);

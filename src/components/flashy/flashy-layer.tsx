@@ -24,7 +24,7 @@ export function FlashyLayer() {
 
   const refresh = useCallback(async () => {
     try {
-      const res = await fetch('/api/flashy', { cache: 'no-store' });
+      const res = await fetch('/ctf/api/flashy', { cache: 'no-store' });
       if (res.ok) setState((await res.json()) as FlashyTeamState);
     } catch {
       // Offline: keep what is on screen, the next poll will catch up.
@@ -84,7 +84,7 @@ function Overlay({ state, refresh }: { state: Live; refresh: () => Promise<void>
   }
 
   async function play() {
-    const data = await post('/api/flashy/playback');
+    const data = await post('/ctf/api/flashy/playback');
     if (!data) return void refresh();
     setVideoUrl(data.videoUrl);
     wantPlay.current = true;
@@ -92,13 +92,13 @@ function Overlay({ state, refresh }: { state: Live; refresh: () => Promise<void>
   }
 
   async function answer() {
-    const data = await post('/api/flashy/answer', { optionId: selected });
+    const data = await post('/ctf/api/flashy/answer', { optionId: selected });
     if (data) setShown(data.result);
     await refresh();
   }
 
   async function skip() {
-    const data = await post('/api/flashy/skip');
+    const data = await post('/ctf/api/flashy/skip');
     setConfirmSkip(false);
     if (data) await refresh();
   }

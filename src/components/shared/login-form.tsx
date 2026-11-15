@@ -1,5 +1,7 @@
 'use client';
 
+import { appPath } from '@/lib/app-path';
+
 import { useState, type FormEvent } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -37,7 +39,7 @@ export function LoginForm({
       });
       if (res.ok) {
         // A full load, so nothing cached from a previous session survives.
-        window.location.assign(next);
+        window.location.assign(appPath(next));
         return;
       }
       const body = await res.json();

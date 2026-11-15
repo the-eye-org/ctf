@@ -127,7 +127,7 @@ export function FlagForm({
     if (pending || retryIn > 0) return;
     setPending(true);
     try {
-      const res = await apiPost(`/api/challenges/${number}/submit`, { flag });
+      const res = await apiPost(`/ctf/api/challenges/${number}/submit`, { flag });
       if (res.ok) apply(await res.json());
       else if (res.status !== 401) setMessage('Signal interference, try again.');
     } catch {

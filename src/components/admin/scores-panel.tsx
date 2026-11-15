@@ -16,7 +16,7 @@ export function ScoresPanel({ teams }: { teams: { id: string; name: string }[] }
     event.preventDefault();
     const form = event.currentTarget;
     const f = new FormData(form);
-    const result = await run('POST', '/api/admin/scores/adjust', {
+    const result = await run('POST', '/ctf/api/admin/scores/adjust', {
       teamId: String(f.get('teamId')),
       points: Number(f.get('points')),
       reason: String(f.get('reason')),
@@ -63,13 +63,13 @@ export function ScoresPanel({ teams }: { teams: { id: string; name: string }[] }
         </p>
         <div className="flex flex-wrap gap-2">
           <a
-            href="/api/admin/export?kind=leaderboard"
+            href="/ctf/api/admin/export?kind=leaderboard"
             className="inline-flex h-11 items-center rounded-md border border-border px-3 text-sm font-medium hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring sm:h-8"
           >
             Download leaderboard CSV
           </a>
           <a
-            href="/api/admin/export?kind=results"
+            href="/ctf/api/admin/export?kind=results"
             className="inline-flex h-11 items-center rounded-md border border-border px-3 text-sm font-medium hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring sm:h-8"
           >
             Download results CSV

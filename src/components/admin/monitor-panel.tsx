@@ -26,7 +26,7 @@ export function MonitorPanel({
     let live = true;
     async function load() {
       try {
-        const res = await fetch(`/api/admin/monitor${team ? `?team=${team}` : ''}`, {
+        const res = await fetch(`/ctf/api/admin/monitor${team ? `?team=${team}` : ''}`, {
           cache: 'no-store',
         });
         if (!res.ok) throw new Error();

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useLiveState } from '@/hooks/use-live-state';
 
-const CLIP = '/ending/spider-man-will-return.mp4';
+const CLIP = '/ctf/ending/spider-man-will-return.mp4';
 // If the clip stalls (network, codec), the ending still arrives.
 const CLIP_LIMIT_MS = 15_000;
 const FADE_MS = 700;

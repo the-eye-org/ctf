@@ -18,7 +18,7 @@ export default async function AdminLoginPage({
   return (
     <AuthCard title="Admin login" subtitle="Organisers only.">
       <LoginForm
-        endpoint="/api/auth/admin-login"
+        endpoint="/ctf/api/auth/admin-login"
         next="/admin"
         notice={isSessionEndReason(reason) ? SESSION_ENDED_MESSAGES[reason] : undefined}
       />

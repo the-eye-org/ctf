@@ -49,7 +49,7 @@ function AssignCoordinates({ config }: { config: CoordinateConfig }) {
       order: r.order,
       orderClue: null,
     }));
-    return run('POST', '/api/admin/coordinates/fragments', { plan });
+    return run('POST', '/ctf/api/admin/coordinates/fragments', { plan });
   }
 
   return (
@@ -145,7 +145,7 @@ function LocationNames({ config }: { config: CoordinateConfig }) {
       className={panelClass}
       onSubmit={(e) => {
         e.preventDefault();
-        return run('POST', '/api/admin/coordinates/final', { coordinates: rows });
+        return run('POST', '/ctf/api/admin/coordinates/final', { coordinates: rows });
       }}
     >
       <SectionTitle>Location names</SectionTitle>
@@ -195,7 +195,7 @@ function SpaceSignal({ config }: { config: CoordinateConfig }) {
       className={panelClass}
       onSubmit={async (e) => {
         e.preventDefault();
-        const result = await run('POST', '/api/admin/coordinates/signal', {
+        const result = await run('POST', '/ctf/api/admin/coordinates/signal', {
           signal,
           answers,
           points: Number(points),

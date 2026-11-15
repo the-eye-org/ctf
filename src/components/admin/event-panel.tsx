@@ -90,7 +90,7 @@ export function EventPanel({
             checked={submissionsOpen}
             disabled={pending}
             onChange={() =>
-              run('POST', '/api/admin/event/settings', { submissionsOpen: !submissionsOpen })
+              run('POST', '/ctf/api/admin/event/settings', { submissionsOpen: !submissionsOpen })
             }
           />
           Submissions {submissionsOpen ? 'open' : 'closed'}
@@ -105,7 +105,7 @@ export function EventPanel({
             checked={leaderboardFrozen}
             disabled={pending}
             onChange={() =>
-              run('POST', '/api/admin/event/settings', { leaderboardFrozen: !leaderboardFrozen })
+              run('POST', '/ctf/api/admin/event/settings', { leaderboardFrozen: !leaderboardFrozen })
             }
           />
           Leaderboard {leaderboardFrozen ? 'frozen' : 'live'}
@@ -120,7 +120,7 @@ export function EventPanel({
             checked={decoderReleased}
             disabled={pending}
             onChange={() =>
-              run('POST', '/api/admin/event/settings', { decoderReleased: !decoderReleased })
+              run('POST', '/ctf/api/admin/event/settings', { decoderReleased: !decoderReleased })
             }
           />
           Final decoder {decoderReleased ? 'released' : 'hidden'}
@@ -146,7 +146,7 @@ export function EventPanel({
             <Button
               className={actionClass}
               disabled={pending || !finale}
-              onClick={() => run('POST', '/api/admin/event/settings', { freezeAt: `${finale}:00` })}
+              onClick={() => run('POST', '/ctf/api/admin/event/settings', { freezeAt: `${finale}:00` })}
             >
               Set finale time
             </Button>
@@ -154,7 +154,7 @@ export function EventPanel({
               variant="outline"
               className={actionClass}
               disabled={pending || !freezeAt}
-              onClick={() => run('POST', '/api/admin/event/settings', { freezeAt: null })}
+              onClick={() => run('POST', '/ctf/api/admin/event/settings', { freezeAt: null })}
             >
               Clear
             </Button>
@@ -183,7 +183,7 @@ export function EventPanel({
           label={active.label}
           onClose={close}
           onConfirm={async () => {
-            const result = await run('POST', '/api/admin/event/transition', {
+            const result = await run('POST', '/ctf/api/admin/event/transition', {
               action: active.action,
             });
             if (result.ok) close();
@@ -200,7 +200,7 @@ export function EventPanel({
           label="Reset"
           onClose={close}
           onConfirm={async () => {
-            const result = await run('POST', '/api/admin/event/reset', { confirm: 'RESET' });
+            const result = await run('POST', '/ctf/api/admin/event/reset', { confirm: 'RESET' });
             if (result.ok) close();
             else return result.message;
           }}

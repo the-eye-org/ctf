@@ -32,7 +32,7 @@ export function FlashyPanel({ view, timeZone }: { view: FlashyAdminView; timeZon
     const correct = text('correct');
     const wrong = [text('wrong1'), text('wrong2'), text('wrong3')];
     const options = correct || wrong.some(Boolean) ? { correct, wrong } : {};
-    const result = await settings.run('PATCH', '/api/admin/flashy', {
+    const result = await settings.run('PATCH', '/ctf/api/admin/flashy', {
       videoUrl: text('videoUrl') || null,
       videoSeconds: Number(text('videoSeconds')),
       bonusPoints: Number(text('bonusPoints')),
@@ -67,7 +67,7 @@ export function FlashyPanel({ view, timeZone }: { view: FlashyAdminView; timeZon
           disabled={trigger.pending || live || !view.ready}
           onClick={() => {
             if (window.confirm('Trigger FLASHY SPIDER-MAN on every team screen now?')) {
-              void trigger.run('POST', '/api/admin/flashy/trigger');
+              void trigger.run('POST', '/ctf/api/admin/flashy/trigger');
             }
           }}
         >
@@ -80,7 +80,7 @@ export function FlashyPanel({ view, timeZone }: { view: FlashyAdminView; timeZon
           disabled={trigger.pending || !live}
           onClick={() => {
             if (window.confirm('End the event? No more answers or bonus will be accepted.')) {
-              void trigger.run('POST', '/api/admin/flashy/end');
+              void trigger.run('POST', '/ctf/api/admin/flashy/end');
             }
           }}
         >

@@ -16,7 +16,7 @@ function Block({ block, number }: { block: EvidenceBlock; number: number }) {
     case 'file':
       return (
         <a
-          href={`/api/challenges/${number}/assets/${encodeURIComponent(block.name)}`}
+          href={`/ctf/api/challenges/${number}/assets/${encodeURIComponent(block.name)}`}
           className="inline-flex min-h-11 items-center text-ring underline underline-offset-4"
         >
           Download {block.label ?? block.name}
