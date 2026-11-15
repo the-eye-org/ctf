@@ -1,12 +1,9 @@
-// Prints a filled .env.local block. Paste the Supabase values from the dashboard.
+// Prints a filled .env.local block. Paste the PostgreSQL connection URLs.
 import { randomBytes } from 'node:crypto';
 
 const secret = () => randomBytes(32).toString('base64');
 
-console.log(`# --- Supabase (dashboard: Connect, and Project Settings > API Keys) ---
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
+console.log(`# --- PostgreSQL ---
 DATABASE_URL=
 DIRECT_DATABASE_URL=
 
@@ -32,4 +29,5 @@ ARGON2_PARALLELISM=1
 # --- Seed and tests only (never used at runtime) ---
 SEED_ADMIN_USERNAME=admin
 SEED_ADMIN_PASSWORD=${randomBytes(18).toString('base64url')}
-WIPEABLE_DB_REF=`);
+WIPEABLE_DB_REF=
+WORKSPACE_STORAGE_DIR=./data/workspaces`);

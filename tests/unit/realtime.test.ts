@@ -15,35 +15,10 @@ describe('broadcast payloads', () => {
   });
 });
 
-describe('sendBroadcast', () => {
-  it('posts one public message and never puts the service key in the body', async () => {
-    const fetchMock = vi.fn(async () => new Response(null, { status: 202 }));
-    expect(await sendBroadcast('board', boardPayload(), fetchMock as never)).toBe(true);
-
-    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
-    expect(url).toBe(`${env.NEXT_PUBLIC_SUPABASE_URL}/realtime/v1/api/broadcast`);
-    const body = JSON.parse(init.body as string);
-    expect(body).toEqual({
-      messages: [{ topic: channelName(), event: 'board', payload: {}, private: false }],
-    });
-    expect(init.body as string).not.toContain(env.SUPABASE_SERVICE_ROLE_KEY);
-  });
-
-  it('does not throw when the request fails, and logs no secret', async () => {
-    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const failing = vi.fn(async () => {
-      throw new Error('network down');
-    });
-    expect(await sendBroadcast('status', statusPayload('paused'), failing as never)).toBe(false);
-
-    const rejected = vi.fn(async () => new Response(null, { status: 500 }));
-    expect(await sendBroadcast('board', boardPayload(), rejected as never)).toBe(false);
-
-    expect(log).toHaveBeenCalledWith('broadcast failed', {
-      event: 'status',
-      message: 'network down',
-    });
-    expect(JSON.stringify(log.mock.calls)).not.toContain(env.SUPABASE_SERVICE_ROLE_KEY);
-    log.mockRestore();
+describe('polling notifications', () => {
+  it('does not contact an external service', async () => {
+    const fetchMock = vi.fn();
+    expect(await sendBroadcast('board', {}, fetchMock)).toBe(true);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

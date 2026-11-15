@@ -37,13 +37,3 @@ BEGIN
   END LOOP;
 END $$;
 
--- 3) Storage buckets (Supabase only).
-DO $$
-BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'storage' AND table_name = 'buckets') THEN
-    INSERT INTO storage.buckets (id, name, public)
-    VALUES ('challenge-assets', 'challenge-assets', true),   -- non-secret media only
-           ('private-assets',   'private-assets',   false)   -- served through our API only
-    ON CONFLICT (id) DO NOTHING;
-  END IF;
-END $$;

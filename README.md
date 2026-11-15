@@ -1,32 +1,12 @@
 # SPIDEY tracXer — Search the SpiderXman
 
-Spider-Man–themed beginner CTF for a live 75-minute college event (EYE club, PSG Tech). Next.js 15 + Supabase on Vercel.
-
-## Prerequisites
-- Node 20.12+ and pnpm
-- A Supabase project **for development only**. Tests and `pnpm seed` wipe its app tables, so never use the event project. Docker isn't needed.
+Spider-Man–themed beginner CTF for a live 75-minute college event (EYE club, PSG Tech). Next.js 15 + PostgreSQL in Docker.
 
 ## Setup
-```bash
-pnpm install
-pnpm gen-secrets > .env.local     # then fill in the Supabase values below
-pnpm db:push                      # applies supabase/migrations/
-pnpm seed                         # 1 admin, 10 test teams, practice + 10 placeholder challenges
-pnpm dev
-```
 
-Values to fill in `.env.local`, from the Supabase dashboard:
+The app uses self-hosted PostgreSQL, private local file storage, and same-origin polling. See [self-hosted deployment](docs/self-hosted.md) for Jenkins/Compose deployment, data migration, and backups.
 
-| Variable | Where |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Publishable key |
-| `SUPABASE_SERVICE_ROLE_KEY` | Secret / service role key |
-| `DATABASE_URL` | Connect → Transaction pooler (port 6543) |
-| `DIRECT_DATABASE_URL` | Connect → Session pooler (port 5432) |
-| `WIPEABLE_DB_REF` | The dev project's ref, which allows seed and tests to wipe it |
-
-Percent-encode any special characters in the database password.
+Install dependencies with pnpm install, configure .env.local from .env.example, apply migrations with pnpm db:push, and start pnpm dev. Seed is destructive and only for empty disposable development databases.
 
 ## Scripts
 | Command | What it does |
@@ -42,7 +22,7 @@ Percent-encode any special characters in the database password.
 ## Folder map
 ```text
 docs/                 PRD, TRD, app flow, design brief, schema, implementation plan
-supabase/migrations/  SQL source of truth (never use drizzle-kit push)
+db/migrations/  SQL source of truth (never use drizzle-kit push)
 scripts/              seed, gen-secrets, db-push, bench-argon2
 src/lib/              env, db, crypto, auth, flags, variants
 tests/                unit and integration

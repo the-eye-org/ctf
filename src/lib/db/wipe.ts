@@ -6,10 +6,7 @@ export function isWipeable(databaseUrl: string, wipeableRef: string | undefined)
   const url = new URL(databaseUrl);
   if (['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) return true;
   if (!wipeableRef) return false;
-  // Direct host is db.<ref>.supabase.co; pooler username is postgres.<ref>.
-  return (
-    url.hostname === `db.${wipeableRef}.supabase.co` || url.username === `postgres.${wipeableRef}`
-  );
+  return url.hostname === wipeableRef;
 }
 
 // Reference rows created by migrations 0003 (the three surprises) and 0007 (Flashy settings) survive a wipe.

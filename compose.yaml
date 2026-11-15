@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:17-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ctf
+      POSTGRES_USER: ctf
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ctf -d ctf"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  app:
+    image: ${IMAGE_REF:?Set IMAGE_REF}
+    container_name: signalxshift
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
+      DIRECT_DATABASE_URL: ${DIRECT_DATABASE_URL:?Set DIRECT_DATABASE_URL}
+      WORKSPACE_STORAGE_DIR: /data/workspaces
+      SESSION_PEPPER: ${SESSION_PEPPER:?Set SESSION_PEPPER}
+      FLAG_HMAC_KEY: ${FLAG_HMAC_KEY:?Set FLAG_HMAC_KEY}
+      VARIANT_HMAC_KEY: ${VARIANT_HMAC_KEY:?Set VARIANT_HMAC_KEY}
+      COORD_HMAC_KEY: ${COORD_HMAC_KEY:?Set COORD_HMAC_KEY}
+      REVEAL_ENC_KEY: ${REVEAL_ENC_KEY:?Set REVEAL_ENC_KEY}
+      CSRF_SECRET: ${CSRF_SECRET:?Set CSRF_SECRET}
+      FLAG_PREFIX: ${FLAG_PREFIX:-EYE}
+      EVENT_TIMEZONE: ${EVENT_TIMEZONE:-Asia/Kolkata}
+      MAX_SESSIONS_PER_TEAM: ${MAX_SESSIONS_PER_TEAM:-1}
+      REALTIME_CHANNEL_PREFIX: ${REALTIME_CHANNEL_PREFIX:-spidey}
+      ARGON2_MEMORY_KIB: ${ARGON2_MEMORY_KIB:-19456}
+      ARGON2_TIME_COST: ${ARGON2_TIME_COST:-2}
+      ARGON2_PARALLELISM: ${ARGON2_PARALLELISM:-1}
+    ports:
+      - "8005:3000"
+    volumes:
+      - workspace_data:/data/workspaces
+volumes:
+  postgres_data:
+  workspace_data:

@@ -1,4 +1,4 @@
-// Typing only. supabase/migrations/ is the source of truth for constraints and indexes.
+// Typing only. db/migrations/ is the source of truth for constraints and indexes.
 // tests/integration/schema.test.ts fails if these columns drift from the database.
 import { sql } from 'drizzle-orm';
 import {

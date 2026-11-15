@@ -6,9 +6,6 @@ import { isWipeable } from '@/lib/db/wipe';
 
 const secret = () => randomBytes(32).toString('base64');
 const valid = {
-  NEXT_PUBLIC_SUPABASE_URL: 'https://x.supabase.co',
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: 'anon',
-  SUPABASE_SERVICE_ROLE_KEY: 'service',
   DATABASE_URL: 'postgresql://u:p@localhost:6543/postgres',
   DIRECT_DATABASE_URL: 'postgresql://u:p@localhost:5432/postgres',
   SESSION_PEPPER: secret(),
@@ -67,14 +64,11 @@ describe('isWipeable', () => {
     expect(isWipeable('postgresql://postgres:p@localhost:5432/postgres', undefined)).toBe(true);
   });
 
-  it('allows only the named project', () => {
-    const pooler = 'postgresql://postgres.devref:p@aws-1-ap-south-1.pooler.supabase.com:5432/db';
-    const direct = 'postgresql://postgres:p@db.devref.supabase.co:5432/postgres';
-    expect(isWipeable(pooler, 'devref')).toBe(true);
-    expect(isWipeable(direct, 'devref')).toBe(true);
-    expect(isWipeable(pooler, 'prodref')).toBe(false);
-    expect(isWipeable(direct, 'prodref')).toBe(false);
-    expect(isWipeable(pooler, undefined)).toBe(false);
-    expect(isWipeable(pooler, '')).toBe(false);
+  it('allows only the explicitly named database host', () => {
+    const url = 'postgresql://ctf:p@db:5432/ctf';
+    expect(isWipeable(url, 'db')).toBe(true);
+    expect(isWipeable(url, 'production-db')).toBe(false);
+    expect(isWipeable(url, undefined)).toBe(false);
+    expect(isWipeable(url, '')).toBe(false);
   });
 });

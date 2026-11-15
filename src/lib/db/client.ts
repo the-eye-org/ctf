@@ -4,7 +4,7 @@ import postgres from 'postgres';
 import { env } from '@/lib/env';
 import * as schema from './schema';
 
-// Supavisor transaction pooler: no prepared statements, one connection per serverless instance.
+// Bound the database pool per application process.
 const raw = postgres(env.DATABASE_URL, { prepare: false, max: 1 });
 
 // Supavisor hangs when the driver pipelines a query behind one that has no parameters, and no

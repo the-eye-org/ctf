@@ -49,3 +49,8 @@ next-env.d.ts
 
 # Organiser images waiting to be processed
 /incoming/
+
+data/
+runtime-env.json
+.deploy.env
+*.dump

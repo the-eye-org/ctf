@@ -23,7 +23,7 @@ const target = z.object({
   file: z.string().refine((f) => fileType(f) !== undefined, 'Unsupported file name or type.'),
 });
 
-// Returns a one-off upload URL; the browser sends the file straight to Storage.
+// Returns a short-lived upload URL for the authenticated local file endpoint.
 export const POST = withAdmin(async (req, session) => {
   const { workspace, file } = await parseBody(req, target);
   const uploadUrl = await signUpload(workspace, file);

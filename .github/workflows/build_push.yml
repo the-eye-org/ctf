@@ -34,10 +34,7 @@ jobs:
 
   build:
     runs-on: blacksmith-4vcpu-ubuntu-2404
-    env:
-      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    env: &app_env
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       DIRECT_DATABASE_URL: ${{ secrets.DIRECT_DATABASE_URL }}
       SESSION_PEPPER: ${{ secrets.SESSION_PEPPER }}
@@ -78,6 +75,7 @@ jobs:
   build-and-push:
     if: github.event_name != 'pull_request'
     needs: [validate, build]
+    env: *app_env
     runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
@@ -97,6 +95,16 @@ jobs:
       - uses: useblacksmith/setup-docker-builder@v2
         with:
           cache-key: ctf/Dockerfile
+      - name: Prepare embedded runtime settings
+        run: |
+          node <<'NODE'
+          const names = ['DATABASE_URL', 'DIRECT_DATABASE_URL', 'SESSION_PEPPER', 'FLAG_HMAC_KEY', 'VARIANT_HMAC_KEY', 'COORD_HMAC_KEY', 'REVEAL_ENC_KEY', 'CSRF_SECRET', 'FLAG_PREFIX', 'EVENT_TIMEZONE', 'MAX_SESSIONS_PER_TEAM', 'REALTIME_CHANNEL_PREFIX', 'ARGON2_MEMORY_KIB', 'ARGON2_TIME_COST', 'ARGON2_PARALLELISM'];
+          const settings = Object.fromEntries(names.map(name => {
+            if (!process.env[name]) throw new Error(`Missing ${name}`);
+            return [name, process.env[name]];
+          }));
+          require('node:fs').writeFileSync('runtime-env.json', JSON.stringify(settings), {mode: 0o600});
+          NODE
       - name: Build immutable image
         uses: useblacksmith/build-push-action@v2
         with:
@@ -104,6 +112,8 @@ jobs:
           file: ./Dockerfile
           push: true
           provenance: false
+          secret-files: |
+            runtime_env=runtime-env.json
           tags: |
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
             ${{ env.IMAGE_NAME }}:latest

@@ -1,4 +1,9 @@
-import { createClient } from '@supabase/supabase-js';
+import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
+import { createWriteStream } from 'node:fs';
+import { mkdir, readdir, readFile, rename, rm } from 'node:fs/promises';
+import { join, resolve } from 'node:path';
+import { Readable, Transform } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 
 import { env } from '@/lib/env';
 import {
@@ -8,9 +13,7 @@ import {
   type WorkspaceFileKind,
 } from '@/lib/workspace/definitions';
 
-// Workspaces an admin uploads live in a private Supabase Storage bucket, one folder each. Only the
-// server reads it (service key); teams get files through the signed-in workspace route as before.
-const BUCKET = 'workspaces';
+// Uploaded files live in a persistent private directory and are served through authenticated routes.
 
 export const WORKSPACE_NAME = /^[a-z0-9][a-z0-9-]{1,39}$/;
 export const FILE_NAME = /^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$/;
@@ -40,41 +43,31 @@ export function fileType(key: string) {
   return FILE_NAME.test(key) && Object.hasOwn(TYPES, ext) ? TYPES[ext] : undefined;
 }
 
-let client: ReturnType<typeof createClient> | undefined;
-function storage() {
-  client ??= createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-  return client.storage;
+const ROOT = resolve(process.env.WORKSPACE_STORAGE_DIR ?? './data/workspaces');
+function filePath(workspace: string, key: string) {
+  if (!WORKSPACE_NAME.test(workspace) || !fileType(key)) throw new Error('Invalid workspace file');
+  return join(ROOT, workspace, key);
 }
-
-let bucketReady = false;
-async function ensureBucket() {
-  if (bucketReady) return;
-  const { error } = await storage().createBucket(BUCKET, { public: false });
-  if (error && !/already exists/i.test(error.message)) throw error;
-  bucketReady = true;
-}
-
 export async function listUploadedWorkspaces(): Promise<string[]> {
-  await ensureBucket();
-  const { data, error } = await storage().from(BUCKET).list('', { limit: 1000 });
-  if (error) throw error;
-  // Folders come back with a null id.
-  return data.filter((o) => o.id === null && WORKSPACE_NAME.test(o.name)).map((o) => o.name);
+  await mkdir(ROOT, { recursive: true });
+  return (await readdir(ROOT, { withFileTypes: true }))
+    .filter((entry) => entry.isDirectory() && WORKSPACE_NAME.test(entry.name))
+    .map((entry) => entry.name)
+    .sort();
 }
-
 export async function listUploadedFiles(workspace: string): Promise<WorkspaceFile[]> {
   if (!WORKSPACE_NAME.test(workspace)) return [];
-  await ensureBucket();
-  const { data, error } = await storage()
-    .from(BUCKET)
-    .list(workspace, { limit: 1000, sortBy: { column: 'name', order: 'asc' } });
-  if (error) throw error;
-  return data.flatMap((o) => {
-    const type = o.id === null ? undefined : fileType(o.name);
-    return type ? [{ key: o.name, ...type }] : [];
-  });
+  try {
+    return (await readdir(join(ROOT, workspace), { withFileTypes: true }))
+      .flatMap((entry) => {
+        const type = fileType(entry.name);
+        return entry.isFile() && type ? [{ key: entry.name, ...type }] : [];
+      })
+      .sort((a, b) => a.key.localeCompare(b.key));
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
+    throw error;
+  }
 }
 
 // Built-in workspaces win; anything else is looked up in the bucket.
@@ -89,24 +82,61 @@ export async function findFile(workspace: string, key: string) {
 }
 
 export async function downloadUploadedFile(workspace: string, key: string): Promise<Buffer> {
-  const { data, error } = await storage().from(BUCKET).download(`${workspace}/${key}`);
-  if (error) throw error;
-  return Buffer.from(await data.arrayBuffer());
+  return readFile(filePath(workspace, key));
 }
-
-// A one-off URL the admin's browser PUTs the file to, so big files skip the function body limit.
+function signature(workspace: string, key: string, expires: string) {
+  return createHmac('sha256', env.CSRF_SECRET)
+    .update(JSON.stringify([workspace, key, expires]))
+    .digest('hex');
+}
 export async function signUpload(workspace: string, key: string): Promise<string> {
-  await ensureBucket();
-  const { data, error } = await storage()
-    .from(BUCKET)
-    .createSignedUploadUrl(`${workspace}/${key}`, { upsert: true });
-  if (error) throw error;
-  return data.signedUrl;
+  filePath(workspace, key);
+  const expires = String(Date.now() + 5 * 60_000);
+  return `/ctf/api/admin/workspaces/upload?${new URLSearchParams({ workspace, key, expires, token: signature(workspace, key, expires) })}`;
 }
-
+export function validUpload(
+  workspace: string,
+  key: string,
+  expires: string,
+  token: string,
+): boolean {
+  if (
+    !WORKSPACE_NAME.test(workspace) ||
+    !fileType(key) ||
+    !/^\d+$/.test(expires) ||
+    Number(expires) < Date.now()
+  )
+    return false;
+  const expected = Buffer.from(signature(workspace, key, expires));
+  const received = Buffer.from(token);
+  return expected.length === received.length && timingSafeEqual(expected, received);
+}
+export async function saveUploadedFile(
+  workspace: string,
+  key: string,
+  body: ReadableStream<Uint8Array>,
+) {
+  const destination = filePath(workspace, key);
+  await mkdir(join(ROOT, workspace), { recursive: true });
+  const temporary = join(ROOT, workspace, `.${randomUUID()}.tmp`);
+  let bytes = 0;
+  const limit = new Transform({
+    transform(chunk, encoding, callback) {
+      bytes += chunk.length;
+      callback(bytes > 32 * 1024 * 1024 ? new Error('Upload exceeds 32 MiB') : null, chunk);
+    },
+  });
+  try {
+    await pipeline(
+      Readable.fromWeb(body as import('node:stream/web').ReadableStream),
+      limit,
+      createWriteStream(temporary, { flags: 'wx' }),
+    );
+    await rename(temporary, destination);
+  } finally {
+    await rm(temporary, { force: true });
+  }
+}
 export async function removeUploadedFile(workspace: string, key: string) {
-  const { error } = await storage()
-    .from(BUCKET)
-    .remove([`${workspace}/${key}`]);
-  if (error) throw error;
+  await rm(filePath(workspace, key), { force: true });
 }
