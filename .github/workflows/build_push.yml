@@ -104,7 +104,9 @@ jobs:
           file: ./Dockerfile
           push: true
           provenance: false
-          tags: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.IMAGE_NAME }}:latest
       - name: Notify Jenkins with immutable image
         env:
           JENKINS_WEBHOOK_URL: ${{ secrets.JENKINS_WEBHOOK_URL }}
