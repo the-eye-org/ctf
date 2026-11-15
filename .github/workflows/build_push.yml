@@ -1,0 +1,96 @@
+name: Validate and build THE EYE
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eye-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  IMAGE_NAME: ghcr.io/the-eye-org/ctf
+
+jobs:
+  validate:
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    steps:
+      - uses: useblacksmith/checkout@v1
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+
+  test:
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    steps:
+      - uses: useblacksmith/checkout@v1
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+
+  build:
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    steps:
+      - uses: useblacksmith/checkout@v1
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+  build-and-push:
+    if: github.event_name != 'pull_request'
+    needs: [validate, test, build]
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: useblacksmith/checkout@v1
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: useblacksmith/setup-docker-builder@v2
+        with:
+          cache-key: ctf/Dockerfile
+      - name: Build immutable image
+        uses: useblacksmith/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          provenance: false
+          tags: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+      - name: Notify Jenkins with immutable image
+        env:
+          JENKINS_WEBHOOK_URL: ${{ secrets.JENKINS_WEBHOOK_URL }}
+        run: |
+          test -n "$JENKINS_WEBHOOK_URL"
+          # The college Jenkins chain is incomplete; certificate verification is
+          # disabled for this trigger at the deployment owner's explicit request.
+          curl --proto '=https' --insecure --fail --silent --show-error --connect-timeout 10 --max-time 30 \
+            --get --data-urlencode "IMAGE_REF=$IMAGE_NAME:$GITHUB_SHA" "$JENKINS_WEBHOOK_URL"
