@@ -10,9 +10,13 @@ export function middleware(req: NextRequest) {
   if (pathname === '/admin/login' || req.cookies.has(SESSION_COOKIE)) return NextResponse.next();
 
   const isAdminArea = pathname === '/screen' || pathname.startsWith('/admin');
-  const url = new URL(isAdminArea ? '/ctf/admin/login' : '/ctf/login', req.url);
-  if (!isAdminArea) url.searchParams.set('next', pathname + search);
-  return NextResponse.redirect(url);
+  const loginPath = isAdminArea ? '/ctf/admin/login' : '/ctf/login';
+  const query = isAdminArea ? '' : `?${new URLSearchParams({ next: pathname + search })}`;
+  // Relative Location keeps the public host and scheme behind reverse proxies.
+  return new NextResponse(null, {
+    status: 307,
+    headers: { Location: loginPath + query },
+  });
 }
 
 export const config = {
